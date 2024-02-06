@@ -1,12 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
     [Header("Serialized")]
     public float moveSpeed;
     public float jumpForce;
+    public int curHP;
+    public int MaxHP;
+
+    public float attackRange;
+    public int damage;
+    private bool isAttacking;
 
     public Rigidbody rb;
 
@@ -17,6 +24,11 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Jump();
+        }
+
+        if(Input.GetMouseButtonDown(0) && !isAttacking)
+        {
+            Attack();
         }
 
     }
@@ -50,6 +62,44 @@ public class Player : MonoBehaviour
             return hit.collider != null;
         }
         return false;
+    }
+
+    public void TakeDamage(int damageToTake)
+    {
+        curHP -= damageToTake;
+
+        //update the UI health bar
+
+        if (curHP <= 0)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
+    }
+
+    void Attack()
+    {
+        isAttacking = true;
+
+        Invoke("TryDamage", 0.7f);
+        Invoke("DisableIsAttack", 1.5f);
+
+
+    }
+    void TryDamage()
+    {
+        Ray ray = new Ray(transform.position + transform.forward, transform.forward);
+        RaycastHit[] hits = Physics.SphereCastAll(ray, attackRange, 1 << 8);
+
+        foreach (var a in hits)
+        {
+            a.collider.GetComponent<Enemy>()?.TakeDamage(damage);
+        }
+
+    }
+    void DisableIsAttack()
+    {
+        isAttacking = false;
     }
 
 

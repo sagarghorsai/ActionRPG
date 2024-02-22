@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
     public float jumpForce;
     public int curHP;
     public int MaxHP;
-
+    public Animator anin;
     public float attackRange;
     public int damage;
     private bool isAttacking;
@@ -80,7 +80,7 @@ public class Player : MonoBehaviour
     void Attack()
     {
         isAttacking = true;
-
+        anin.SetBool("IsAttacking", isAttacking);
         Invoke("TryDamage", 0.7f);
         Invoke("DisableIsAttack", 1.5f);
 
@@ -100,6 +100,8 @@ public class Player : MonoBehaviour
     void DisableIsAttack()
     {
         isAttacking = false;
+        anin.SetBool("IsAttacking", isAttacking);
+
     }
 
 
